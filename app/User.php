@@ -16,9 +16,11 @@ class User extends Authenticatable
      */
     const VERIFIED_USER = "1";
     const UNVERIFIED_USER = "0";
+
     const ADMIN_USER = 'true';
     const REGULAR_USER = 'false';
 
+    protected $table = 'users';
 
     protected $fillable = [
         'name',
@@ -48,7 +50,7 @@ class User extends Authenticatable
         return $this->admin == User::ADMIN_USER;
     }
 
-    public function generateVerificationCode () {
+    public static function generateVerificationCode () {
         return str_random(40);
     }
 }
