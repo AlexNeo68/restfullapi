@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $userQuantity = 200;
+        $userQuantity = 1000;
         factory(User::class, $userQuantity)->create();
 
         $categoryQuantity = 10;
