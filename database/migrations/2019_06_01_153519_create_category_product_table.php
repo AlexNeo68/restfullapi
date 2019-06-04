@@ -19,6 +19,7 @@ class CreateCategoryProductTable extends Migration
             
             $table->foreign('category_id')->references('id')->on('categories');
             $table->foreign('product_id')->references('id')->on('products');
+            $table->softDeletes();
         });
     }
 

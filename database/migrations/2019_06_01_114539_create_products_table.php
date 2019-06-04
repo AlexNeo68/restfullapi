@@ -23,6 +23,7 @@ class CreateProductsTable extends Migration
             $table->string('status')->default(Product::UNAVAILABLE_PRODUCT);
             $table->string('image')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
         
         Schema::table('products', function($table) {
