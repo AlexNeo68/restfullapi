@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use App\User;
 use App\Product;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SellerProductController extends ApiController
 {
@@ -56,9 +57,39 @@ class SellerProductController extends ApiController
      * @param  \App\Seller  $seller
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Seller $seller)
+    public function update(Request $request, User $seller, Product $product)
     {
-        //
+
+        $rules = [
+            'quantity' => 'integer|min:1',
+            'image' => 'image',
+            'status' => 'in:'.Product::AVAILABLE_PRODUCT.','.Product::UNAVAILABLE_PRODUCT
+        ];
+
+        $this->validate($request, $rules);
+
+        $this->checkSeller($seller, $product);
+        
+        $product->fill($request->only([
+            'name',
+            'description',
+            'quantity'
+        ]));
+
+        if($request->has('status')){
+            $product->status = $request->status;
+            if($product->isAvailable() && $product->categories()->count() == 0){
+                return $this->errorResponse('That product become available need that product has at least one categories', 409);
+            }
+        }
+
+        if($product->isClean()){
+            return $this->errorResponse('Need specified data for update product', 422);
+        }
+
+        $product->save();
+
+        return $this->showOne($product);
     }
 
     /**
@@ -67,8 +98,17 @@ class SellerProductController extends ApiController
      * @param  \App\Seller  $seller
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Seller $seller)
+    public function destroy(Seller $seller, Product $product)
     {
-        //
+        $this->checkSeller($seller, $product);
+        $product->delete();
+        return $this->showOne($product);
+    }
+
+    public function checkSeller(User $seller, Product $product)
+    {
+        if($seller->id !== $product->seller_id)
+            throw new HttpException(422, "Modifyin product is possible only it owner");
+            
     }
 }
