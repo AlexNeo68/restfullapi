@@ -22,6 +22,7 @@ Route::resource('buyers.categories', 'Buyer\BuyerCategoryController', ['only' =>
 
 /* Categories controllers */
 Route::resource('categories', 'Category\CategoryController', ['except' => ['create', 'edit']]);
+Route::resource('categories', 'Category\CategoryController', ['except' => ['create', 'edit']]);
 Route::resource('categories.products', 'Category\CategoryProductController', ['only' => ['index']]);
 Route::resource('categories.sellers', 'Category\CategorySellerController', ['only' => ['index']]);
 Route::resource('categories.transactions', 'Category\CategoryTransactionController', ['only' => ['index']]);
@@ -51,3 +52,5 @@ Route::resource('transactions.categories', 'Transaction\TransactionCategoryContr
 Route::resource('transactions.sellers', 'Transaction\TransactionSellerController', ['only' => ['index']]);
 
 Route::resource('users', 'User\UserController', ['except' => ['create', 'edit']]);
+Route::name('verify')->get("/users/verify/token/{token}", "User\UserController@verify");
+Route::name('resend')->get("/users/{user}/resend", "User\UserController@resend");
