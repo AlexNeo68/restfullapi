@@ -8,6 +8,7 @@ use App\Http\Controllers\ApiController;
 use App\User;
 use App\Product;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Support\Facades\Storage;
 
 class SellerProductController extends ApiController
 {
@@ -41,7 +42,7 @@ class SellerProductController extends ApiController
 
         $data = $request->all();
 
-        $data['image'] = '1.jpg';
+        $data['image'] = $request->image->store('');
         $data['status'] = Product::UNAVAILABLE_PRODUCT;
         $data['seller_id'] = $seller->id;
 
@@ -83,6 +84,13 @@ class SellerProductController extends ApiController
             }
         }
 
+        if($request->hasFile('image')){
+            if($product->image) {
+                Storage::delete($product->image);
+                $product->image = $request->image->store('');
+            }
+        }
+
         if($product->isClean()){
             return $this->errorResponse('Need specified data for update product', 422);
         }
@@ -102,6 +110,7 @@ class SellerProductController extends ApiController
     {
         $this->checkSeller($seller, $product);
         $product->delete();
+        Storage::delete($product->image);
         return $this->showOne($product);
     }
 
