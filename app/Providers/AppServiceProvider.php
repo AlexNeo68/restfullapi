@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         User::updated(function ($user) {
-            if($user->isDirty()){
+            if($user->isDirty('email')){
                 retry(5, function() use ($user){
                     Mail::to($user)->send(new UserChangedMail($user));
                 }, 100);
