@@ -17,10 +17,16 @@
     
     protected function showAll(Collection $collection, $code = 200)
     {
+      
       if($collection->isEmpty()){
         return $this->successResponse(['data' => $collection], $code);
       }
+
       $transformer = $collection->first()->transformer;
+      
+      $collection = $this->filterData($collection, $transformer);
+      $collection = $this->sortData($collection, $transformer);
+      
       $collection = $this->transformerApply($collection, $transformer);
       return $this->successResponse($collection, $code);
       
@@ -46,5 +52,26 @@
     {
       return fractal($source_data, new $transformer)->toArray();
     }
+
+    protected function sortData(Collection $collection, $transformer)
+    {
+      if(request()->has('sort_by')){
+        $attribute = $transformer::originalAttribute(request()->sort_by);
+        $collection = $collection->sortBy->{$attribute};
+      }
+      return $collection;
+    }
+
+    protected function filterData(Collection $collection, $transformer)
+    {
+      foreach(request()->query() as $query => $value){
+        $attribute = $transformer::originalAttribute($query);
+        if(isset($attribute, $value)){
+          $collection = $collection->where($attribute, $value);
+        }
+      }
+      return $collection;
+    }
+
 
   }
