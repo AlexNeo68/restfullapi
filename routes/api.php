@@ -46,11 +46,13 @@ Route::resource('products.sellers', 'Product\ProductSellerController', ['only' =
 
 
 
-
+/**Transactions Controllers */
 Route::resource('transactions', 'Transaction\TransactionController', ['only' => ['show', 'index']]);
 Route::resource('transactions.categories', 'Transaction\TransactionCategoryController', ['only' => ['index']]);
 Route::resource('transactions.sellers', 'Transaction\TransactionSellerController', ['only' => ['index']]);
 
+
 Route::resource('users', 'User\UserController', ['except' => ['create', 'edit']]);
+
 Route::name('verify')->get("/users/verify/token/{token}", "User\UserController@verify");
 Route::name('resend')->get("/users/{user}/resend", "User\UserController@resend");
