@@ -29,6 +29,9 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home/my-tokens', 'HomeController@GetTokens')->name('personal-tokens');
+Route::get('/home/my-clients', 'HomeController@GetClientsTokens')->name('personal-clients');
+Route::get('/home/my-authorized-clients', 'HomeController@GetAuthorizedClientsTokens')->name('personal-authorized-clients');
 
 Route::get('/', function(){
     return view('welcome');
