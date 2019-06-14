@@ -6,6 +6,7 @@ use App\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use App\User;
+use App\Buyer;
 use App\Transaction;
 use Illuminate\Support\Facades\DB;
 use App\Transformers\TransactionTransformer;
@@ -16,8 +17,9 @@ class ProductBuyerTransactionController extends ApiController
     public function __construct()
     {
         parent::__construct();
-        $this->middleware('scope:purchase-products')->only(['store']);
         $this->middleware('transform.input:' . TransactionTransformer::class)->only(['store']);
+        $this->middleware('scope:purchase-products')->only(['store']);
+        $this->middleware('can:purchase,buyer')->only(['store']);
     }
 
     /**
