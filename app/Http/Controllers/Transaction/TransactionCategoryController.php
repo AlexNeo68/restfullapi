@@ -19,6 +19,7 @@ class TransactionCategoryController extends ApiController
      */
     public function index(Transaction $transaction)
     {
+        $this->isAdminAllowed();
         $categories = $transaction->product->categories;
         return $this->showAll($categories);
     }

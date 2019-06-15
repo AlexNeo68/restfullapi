@@ -19,6 +19,7 @@ class CategorySellerController extends ApiController
      */
     public function index(Category $category)
     {
+        $this->isAdminAllowed();
         $sellers = $category->products()->with('seller')->get()
             ->pluck('seller')
             ->unique()

@@ -20,6 +20,8 @@ class BuyerSellerController extends ApiController
 
     public function index(Buyer $buyer)
     {
+        $this->isAdminAllowed();
+        
         $sellers = $buyer->transactions()->with('product.seller')->get()
         ->pluck('product.seller')
         ->unique('id') //чтобы не было повторов продавцов

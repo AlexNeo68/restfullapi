@@ -21,6 +21,7 @@ class BuyerController extends ApiController
      */
     public function index()
     {
+        $this->isAdminAllowed();
         $buyers = Buyer::all();
         return $this->showAll($buyers);
     }

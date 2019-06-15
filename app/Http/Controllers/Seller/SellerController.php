@@ -22,6 +22,7 @@ class SellerController extends ApiController
      */
     public function index()
     {
+        $this->isAdminAllowed();
         $sellers = Seller::all();
         return $this->showAll($sellers);
     }

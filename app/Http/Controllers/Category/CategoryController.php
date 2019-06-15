@@ -37,7 +37,7 @@ class CategoryController extends ApiController
      */
     public function store(Request $request)
     {
-
+        $this->isAdminAllowed();
         $rules = [
             'name' => 'required',
             'description' => 'required'
@@ -70,6 +70,7 @@ class CategoryController extends ApiController
      */
     public function update(Request $request, Category $category)
     {
+        $this->isAdminAllowed();
         $category->fill($request->only(['name', 'description']));
         
         if($category->isClean()){
@@ -87,6 +88,7 @@ class CategoryController extends ApiController
      */
     public function destroy(Category $category)
     {
+        $this->isAdminAllowed();
         $category->delete();
         return $this->showOne($category);
     }
