@@ -14,6 +14,8 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Database\QueryException;
 use Illuminate\Session\TokenMismatchException;
+use Asm89\Stack\Cors;
+use Asm89\Stack\CorsService;
 
 class Handler extends ExceptionHandler
 {
@@ -59,47 +61,54 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if($exception instanceof ValidationException){
+        $response = $this->handleException($request, $exception);
+        app(CorsService::class)->addActualRequestHeaders($response, $request);
+        return $response;
+    }
+
+    public function handleException($request, Exception $exception)
+    {
+        if ($exception instanceof ValidationException) {
             return $this->convertValidationExceptionToResponse($exception, $request);
         }
 
-        if($exception instanceof ModelNotFoundException){
+        if ($exception instanceof ModelNotFoundException) {
             $modelName = strtolower(class_basename($exception->getModel()));
             return $this->errorResponse("Does not found exists {$modelName} instance!", 404);
         }
 
-        if($exception instanceof AuthenticationException){
+        if ($exception instanceof AuthenticationException) {
             return $this->unauthenticated($request, $exception);
         }
 
-        if($exception instanceof AuthorizationException){
+        if ($exception instanceof AuthorizationException) {
             return $this->errorResponse($exception->getMessage(), 403);
         }
 
-        if($exception instanceof MethodNotAllowedHttpException){
+        if ($exception instanceof MethodNotAllowedHttpException) {
             return $this->errorResponse('The specified method do not allowed to the request!', 405);
         }
 
-        if($exception instanceof NotFoundHttpException){
+        if ($exception instanceof NotFoundHttpException) {
             return $this->errorResponse('The specified URL cannot be found!', 404);
         }
 
-        if($exception instanceof HttpException){
+        if ($exception instanceof HttpException) {
             return $this->errorResponse($exception->getMessage(), $exception->getStatusCode());
         }
 
-        if($exception instanceof QueryException){
-            if($exception->errorInfo[1] == 1451){
+        if ($exception instanceof QueryException) {
+            if ($exception->errorInfo[1] == 1451) {
                 return $this->errorResponse('This resource cannot be delete, because it related to another resource!', 409);
             }
         }
 
-        if($exception instanceof TokenMismatchException){
+        if ($exception instanceof TokenMismatchException) {
             return redirect()->back()->withInput();
         }
 
-        if(config('app.debug')){
-            return parent::render($request, $exception);    
+        if (config('app.debug')) {
+            return parent::render($request, $exception);
         }
         return $this->errorResponse('Unexcpected error on serverside!', 500);
     }
